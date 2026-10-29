@@ -156,3 +156,29 @@ render();
 
 document.getElementById('themeBtn').onclick = ()=> document.body.classList.toggle('light');
 document.getElementById('clearBtn').onclick = ()=>{ if(confirm('Clear all?')){ tasks=[]; save(); render(); } }
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,sans-serif}
+body{background:#121212;color:#fff;min-height:100vh;padding:20px}
+.container{max-width:600px;margin:auto;background:#1e1e1e;border-radius:16px;padding:20px}
+header{display:flex;justify-content:space-between;margin-bottom:20px}
+#liveTime{color:#ff9800;font-size:13px}
+.add-box{background:#2a2a2a;padding:15px;border-radius:12px;margin-bottom:15px}
+.time-inputs{display:flex;gap:10px;margin-bottom:10px}
+.time-inputs div{flex:1}
+.time-inputs label{font-size:12px;color:#aaa}
+.time-inputs input,.subject-input input{width:100%;padding:10px;border-radius:8px;border:none;background:#333;color:#fff}
+.subject-input{display:flex;gap:10px}
+#addBtn{padding:12px 18px;background:#2196F3;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer}
+.filters{display:flex;gap:8px;margin-bottom:15px}
+.filter{padding:8px 14px;border:none;border-radius:20px;background:#333;color:#fff;cursor:pointer}
+.filter.active{background:#4CAF50}
+#clearBtn{margin-left:auto;background:#f44336;color:#fff;border:none;border-radius:20px;padding:8px 14px}
+#taskList{list-style:none}
+#taskList li{display:flex;justify-content:space-between;background:#2a2a2a;padding:12px;border-radius:10px;margin-bottom:10px}
+#taskList li.current{border:2px solid #4CAF50;animation:pulse 1.5s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(76,175,80,.7)}70%{box-shadow:0 0 0 10px rgba(76,175,80,0)}100%{box-shadow:0 0 0 0 rgba(76,175,80,0)}}
+.time{font-weight:bold;color:#2196F3;font-size:14px}
+.live-badge{background:#f44336;color:#fff;font-size:11px;padding:2px 6px;border-radius:10px;margin-top:4px;display:inline-block}
+.done-btn,.del-btn{padding:6px 10px;border:none;border-radius:6px;cursor:pointer}
+.done-btn{background:#4CAF50;color:#fff}
+.del-btn{background:#555;color:#fff}
+#pendingCount{text-align:center;margin-top:15px;color:#aaa}
