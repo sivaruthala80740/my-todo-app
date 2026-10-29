@@ -35,4 +35,24 @@
   </div>
   <script src="script.js"></script>
 </body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Study Timetable</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <header><div><h1>📚 My Study Timetable</h1><p id="liveTime">--:--:--</p></div><button id="themeBtn">🌙</button></header>
+  <div class="add-box">
+    <div class="time-inputs"><div><label>Start Time</label><input type="time" id="startTime"></div><div><label>End Time</label><input type="time" id="endTime"></div></div>
+    <div class="subject-input"><input type="text" id="taskInput" placeholder="Subject"><button id="addBtn">+ Add Slot</button></div>
+  </div>
+  <div class="filters"><button class="filter active" data-filter="all">All</button><button class="filter" data-filter="current">Current</button><button class="filter" data-filter="done">Done</button><button id="clearBtn">Clear All</button></div>
+  <ul id="taskList"></ul><p id="pendingCount">0 pending</p>
+</div>
+<script src="script.js"></script>
+</body>
 </html>
