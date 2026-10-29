@@ -163,7 +163,83 @@ header{display:flex;justify-content:space-between;margin-bottom:20px}
 #liveTime{color:#ff9800;font-size:13px}
 .add-box{background:#2a2a2a;padding:15px;border-radius:12px;margin-bottom:15px}
 .time-inputs{display:flex;gap:10px;margin-bottom:10px}
-.time-inputs div{flex:1}
+const taskInput = document.getElementById('taskInput');
+const startTime = document.getElementById('startTime');
+const endTime = document.getElementById('endTime');
+const addBtn = document.getElementById('addBtn');
+const taskList = document.getElementById('taskList');
+const liveTime = document.getElementById('liveTime');
+
+let tasks = JSON.parse(localStorage.getItem('studySlots') || '[]');
+let alarmPlayedFor = new Set();
+let currentFilter = 'all';
+
+setInterval(() => {
+  const now = new Date();
+  liveTime.textContent = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+  checkAlarms(now);
+  render();
+}, 1000);
+
+function checkAlarms(now) {
+  const currentHM = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+  if(now.getSeconds() !== 0) return;
+  tasks.forEach(t => {
+    if(t.start === currentHM && !alarmPlayedFor.has('start-'+t.id) && !t.done) {
+      playAlarm(t);
+      alarmPlayedFor.add('start-'+t.id);
+    }
+  });
+}
+
+function playAlarm(task) {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    for(let i=0; i<4; i++){
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
+      osc.frequency.setValueAtTime(880, ctx.currentTime + i*0.6);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(ctx.currentTime + i*0.6); osc.stop(ctx.currentTime + i*0.6 + 0.5);
+    }
+  } catch(e){}
+  if(navigator.vibrate) navigator.vibrate([500,200,500,200,500]);
+  alert(`⏰ IT'S TIME TO STUDY!\n\n📚 Subject: ${task.text}\n⏰ Time: ${task.start} - ${task.end}`);
+}
+
+function save(){ localStorage.setItem('studySlots', JSON.stringify(tasks)); }
+
+addBtn.onclick = () => {
+  if(!taskInput.value || !startTime.value || !endTime.value) return alert('Time and Subject pettu fnd!');
+  tasks.push({id: Date.now(), text: taskInput.value, start: startTime.value, end: endTime.value, done:false});
+  taskInput.value=''; save(); render();
+};
+
+function render() {
+  taskList.innerHTML='';
+  let filtered = tasks;
+  if(currentFilter === 'current') filtered = tasks.filter(t => isCurrent(t) && !t.done);
+  if(currentFilter === 'done') filtered = tasks.filter(t => t.done);
+  filtered.forEach(t => {
+    const li = document.createElement('li');
+    li.className = t.done ? 'done' : (isCurrent(t) ? 'current' : '');
+    li.innerHTML = `<div class="task-info"><span class="time">${t.start} - ${t.end}</span><span class="subject">${t.text}</span>${isCurrent(t)?'<span class="live-badge">🔴 LIVE NOW 🔔</span>':''}</div><div class="task-actions"><button class="done-btn" onclick="toggle(${t.id})">${t.done?'Undo':'Done'}</button><button class="del-btn" onclick="del(${t.id})">X</button></div>`;
+    taskList.appendChild(li);
+  });
+  document.getElementById('pendingCount').textContent = `${tasks.filter(t=>!t.done).length} pending • ${tasks.filter(t=>t.done).length} completed`;
+}
+function isCurrent(t){
+  const now = new Date(); const cur = now.getHours()*60+now.getMinutes();
+  const [sh, sm] = t.start.split(':').map(Number); const [eh, em] = t.end.split(':').map(Number);
+  return cur >= sh*60+sm && cur < eh*60+em;
+}
+window.toggle = (id)=>{ const t=tasks.find(x=>x.id===id); t.done=!t.done; save(); render(); }
+window.del = (id)=>{ tasks=tasks.filter(x=>x.id!==id); save(); render(); }
+document.querySelectorAll('.filter').forEach(btn=>{
+  btn.onclick = ()=>{ document.querySelectorAll('.filter').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); currentFilter = btn.dataset.filter; render(); }
+});
+document.getElementById('themeBtn').onclick = ()=> document.body.classList.toggle('light');
+document.getElementById('clearBtn').onclick = ()=>{ if(confirm('Clear all?')){ tasks=[]; save(); render(); alarmPlayedFor.clear(); } }
+render();.time-inputs div{flex:1}
 .time-inputs label{font-size:12px;color:#aaa}
 .time-inputs input,.subject-input input{width:100%;padding:10px;border-radius:8px;border:none;background:#333;color:#fff}
 .subject-input{display:flex;gap:10px}
